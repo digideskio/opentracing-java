@@ -52,11 +52,17 @@ abstract class AbstractSpanBuilder implements Tracer.SpanBuilder {
 
     @Override
     public final AbstractSpanBuilder asChildOf(SpanContext parent) {
+        if (parent instanceof NoopSpanContext) {
+            return AbstractNoopSpanBuilder.INSTANCE;
+        }
         return this.addReference(References.CHILD_OF, parent);
     }
 
     @Override
     public final AbstractSpanBuilder asChildOf(Span parent) {
+        if (parent instanceof NoopSpan) {
+            return AbstractNoopSpanBuilder.INSTANCE;
+        }
         return this.addReference(References.CHILD_OF, parent.context());
     }
 

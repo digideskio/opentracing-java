@@ -13,23 +13,19 @@
  */
 package io.opentracing;
 
-import io.opentracing.Tracer.SpanBuilder;
-import io.opentracing.propagation.Extractor;
-import io.opentracing.propagation.TextMap;
-
+import java.util.Collections;
 import java.util.Map;
 
-final class TestTextMapExtractorImpl implements Extractor<TextMap> {
+
+public interface NoopSpanContext extends SpanContext {
+}
+
+final class NoopSpanContextImpl implements NoopSpanContext {
+    static final NoopSpanContextImpl INSTANCE = new NoopSpanContextImpl();
 
     @Override
-    public SpanBuilder extract(TextMap carrier) {
-        String marker = null;
-        for (Map.Entry<String,String> entry : carrier) {
-            if (entry.getKey().equals("test-marker")) {
-                marker = entry.getValue();
-            }
-        }
-
-        return null != marker ? new TestSpanBuilder(marker) : NoopSpanBuilder.INSTANCE;
+    public Iterable<Map.Entry<String, String>> baggageItems() {
+        return Collections.emptyList();
     }
+
 }

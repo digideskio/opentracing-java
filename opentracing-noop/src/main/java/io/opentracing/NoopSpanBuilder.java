@@ -16,10 +16,11 @@ package io.opentracing;
 import java.util.Collections;
 import java.util.Map;
 
-public final class NoopSpanBuilder implements Tracer.SpanBuilder {
-    public static final Tracer.SpanBuilder INSTANCE = new NoopSpanBuilder();
+public interface NoopSpanBuilder extends Tracer.SpanBuilder {
+}
 
-    private NoopSpanBuilder() {}
+final class NoopSpanBuilderImpl implements NoopSpanBuilder {
+    static final NoopSpanBuilderImpl INSTANCE = new NoopSpanBuilderImpl();
 
     @Override
     public Tracer.SpanBuilder addReference(String refType, SpanContext referenced) {
@@ -58,7 +59,7 @@ public final class NoopSpanBuilder implements Tracer.SpanBuilder {
 
     @Override
     public Span start() {
-        return NoopSpan.INSTANCE;
+        return NoopSpanImpl.INSTANCE;
     }
 
     @Override

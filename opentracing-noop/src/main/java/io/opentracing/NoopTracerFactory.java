@@ -13,21 +13,12 @@
  */
 package io.opentracing;
 
-import io.opentracing.propagation.Format;
-
-public final class NoopTracer implements Tracer {
-
-    public final static NoopTracer INSTANCE = new NoopTracer();
-
-    @Override
-    public SpanBuilder buildSpan(String operationName) {
-        return NoopSpanBuilder.INSTANCE;
+public final class NoopTracerFactory {
+    
+    public static NoopTracer create() {
+        return NoopTracerImpl.INSTANCE;
     }
 
-    @Override
-    public <C> void inject(SpanContext spanContext, Format<C> format, C carrier) {}
-
-    @Override
-    public <C> SpanBuilder extract(Format<C> format, C carrier) { return NoopSpanBuilder.INSTANCE; }
-
+    private NoopTracerFactory() {}
 }
+

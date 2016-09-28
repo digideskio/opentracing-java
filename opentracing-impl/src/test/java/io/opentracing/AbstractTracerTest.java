@@ -71,7 +71,7 @@ public final class AbstractTracerTest {
         Map<String,String> map = Collections.singletonMap("garbageEntry", "garbageVal");
         TextMap carrier = new TextMapExtractAdapter(map);
         SpanBuilder emptyResult = instance.extract(Format.Builtin.TEXT_MAP, carrier);
-        assertEquals("Should be nothing to extract", NoopSpanBuilder.INSTANCE, emptyResult);
+        assertEquals("Should be nothing to extract", AbstractNoopSpanBuilder.INSTANCE, emptyResult);
     }
 
     /**
@@ -87,6 +87,23 @@ public final class AbstractTracerTest {
         TextMap carrier = new TextMapExtractAdapter(map);
         SpanBuilder result = instance.extract(Format.Builtin.TEXT_MAP, carrier);
         assertEquals("Should find the marker", "whatever", ((TestSpanBuilder)result).operationName);
+    }
+
+    @Test
+    public void testExtractAsParent() throws Exception {
+        Map<String,String> map = Collections.singletonMap("test-marker", "whatever");
+        TextMapExtractAdapter adapter = new TextMapExtractAdapter(map);
+        AbstractTracer tracer = new TestTracerImpl();
+        SpanContext parent = tracer.extract(Format.Builtin.TEXT_MAP, adapter);
+        assert AbstractNoopSpan.INSTANCE != tracer.buildSpan("child").asChildOf(parent).start();
+    }
+
+    @Test
+    public void testExtractOfNoParent() throws Exception {
+        AbstractTracer tracer = new TestTracerImpl();
+        assert AbstractNoopSpan.INSTANCE == tracer.buildSpan("child").asChildOf((Span)AbstractNoopSpan.INSTANCE).start();
+        assert AbstractNoopSpan.INSTANCE == tracer.buildSpan("child").asChildOf((SpanContext)AbstractNoopSpan.INSTANCE).start();
+        assert AbstractNoopSpan.INSTANCE == tracer.buildSpan("child").asChildOf(AbstractNoopSpanBuilder.INSTANCE).start();
     }
 
     final class TestTracerImpl extends AbstractTracer {
